@@ -1,0 +1,20 @@
+{
+  "name": "attendance-tracker",
+  "version": "1.0.0",
+  "description": "Attendance tracker using Node.js and Firebase",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.4",
+    "express": "^4.22.1",
+    "firebase-admin": "^12.7.0"
+  },
+  "keywords": [],
+  "type": "commonjs"
+}

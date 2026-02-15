@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="header-content">
+            <div class="header-title">📅 Attendance Management System</div>
+            <div class="date-navigation">
+                <button class="nav-btn" onclick="previousMonth()">◀ Prev</button>
+                <span class="current-date" id="headerDate">02-15-26</span>
+                <button class="nav-btn" onclick="nextMonth()">Next ▶</button>
+                <button type="button" class="calendar-btn" onclick="openCalendarModal()" title="Select Date">📅</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <button onclick="sortByName()">📊 Sort by Name</button>
+        <button onclick="filterPresent()">✓ Present Only</button>
+        <button onclick="resetTable()">🔄 Reset</button>
+    </div>
+
+    <div class="table-wrapper">
+        <table id="attendanceTable">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Period 1</th>
+                    <th>Period 2</th>
+                    <th>Period 3</th>
+                    <th>Period 4</th>
+                    <th>Period 5</th>
+                    <th>Period 6</th>
+                    <th>Period 7</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+
+        <div class="add-row" onclick="addNewStudent()">➕ Add New Student</div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="save-btn" onclick="saveAllAttendance()">💾 Save Attendance</button>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+</div>
+
+<div id="addStudentModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3>Add New Student</h3>
+        <input type="text" id="newStudentName" placeholder="Enter Student Name">
+        <button onclick="confirmAddStudent()">Add Student</button>
+    </div>
+</div>
+
+<div id="calendarModal" class="modal">
+    <div class="modal-content calendar-modal-content">
+        <span class="close" onclick="closeCalendarModal()">&times;</span>
+        <h3>Select Date</h3>
+        <div class="calendar-header">
+            <button class="calendar-nav-btn" onclick="prevCalendarMonth()">◀</button>
+            <span class="calendar-month-year" id="calendarMonthYear">February 2026</span>
+            <button class="calendar-nav-btn" onclick="nextCalendarMonth()">▶</button>
+        </div>
+        <div class="calendar-weekdays">
+            <div class="weekday">Sun</div>
+            <div class="weekday">Mon</div>
+            <div class="weekday">Tue</div>
+            <div class="weekday">Wed</div>
+            <div class="weekday">Thu</div>
+            <div class="weekday">Fri</div>
+            <div class="weekday">Sat</div>
+        </div>
+        <div class="calendar-days" id="calendarDays"></div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadAttendanceData();
+});
+</script>
+
+</body>
+</html>
