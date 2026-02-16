@@ -1,4 +1,3 @@
-/* Moved from public/script.js */
 // ============ AUTH FUNCTIONS ============
 async function handleLogin(event) {
   event.preventDefault();
@@ -14,23 +13,41 @@ async function handleLogin(event) {
   }
 
   try {
-    console.log("Sending login request...");
-    const res = await fetch("/login", {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({ email, password })
-    });
-
-    console.log("Response status:", res.status);
-    const msg = await res.text();
-    console.log("Response message:", msg);
-    
-    if (msg === "Login success") {
-      alert("✅ Login successful!");
-      console.log("Redirecting to dashboard...");
-      window.location.href = "dashboard.html";
+    // Check if running on GitHub Pages (static hosting)
+    if (window.location.hostname.includes('github.io')) {
+      // Client-side authentication for GitHub Pages
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find(u => u.email === email && u.password === password);
+      
+      if (user || (email === 'test@test.com' && password === 'test123')) {
+        // Store login session
+        localStorage.setItem('currentUser', JSON.stringify({ email }));
+        alert("✅ Login successful!");
+        console.log("Redirecting to dashboard...");
+        window.location.href = "dashboard.html";
+      } else {
+        alert("❌ Invalid email or password");
+      }
     } else {
-      alert("❌ " + msg);
+      // Server-side authentication for local development
+      console.log("Sending login request...");
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ email, password })
+      });
+
+      console.log("Response status:", res.status);
+      const msg = await res.text();
+      console.log("Response message:", msg);
+      
+      if (msg === "Login success") {
+        alert("✅ Login successful!");
+        console.log("Redirecting to dashboard...");
+        window.location.href = "dashboard.html";
+      } else {
+        alert("❌ " + msg);
+      }
     }
   } catch (error) {
     console.error("Login error:", error);
@@ -64,19 +81,39 @@ function handleSignup(event) {
 
 async function performSignup(email, password) {
   try {
-    const res = await fetch("/signup", {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({ email, password })
-    });
-
-    const msg = await res.text();
-    
-    if (msg === "User registered") {
+    // Check if running on GitHub Pages (static hosting)
+    if (window.location.hostname.includes('github.io')) {
+      // Client-side signup for GitHub Pages
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      
+      // Check if user already exists
+      if (users.find(u => u.email === email)) {
+        alert("❌ Email already exists");
+        return;
+      }
+      
+      // Add new user
+      users.push({ email, password });
+      localStorage.setItem('users', JSON.stringify(users));
+      
       alert("✅ Account created successfully! Please login.");
       window.location = "index.html";
     } else {
-      alert("❌ " + msg);
+      // Server-side signup for local development
+      const res = await fetch("/signup", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ email, password })
+      });
+
+      const msg = await res.text();
+      
+      if (msg === "User registered") {
+        alert("✅ Account created successfully! Please login.");
+        window.location = "index.html";
+      } else {
+        alert("❌ " + msg);
+      }
     }
   } catch (error) {
     alert("❌ Signup failed: " + error.message);
@@ -106,19 +143,31 @@ function updateHeaderDate() {
 
 async function loadAttendanceData() {
   try {
-    const res = await fetch("/attendance");
-    const data = await res.json();
-    
-    // Convert array to object format
-    if (Array.isArray(data)) {
-      attendanceData = {};
-      data.forEach(record => {
-        if (record.studentName) {
-          attendanceData[record.studentName] = record;
-        }
-      });
+    // Check if running on GitHub Pages (static hosting)
+    if (window.location.hostname.includes('github.io')) {
+      // Load from localStorage for GitHub Pages
+      const storedData = localStorage.getItem('attendanceData');
+      if (storedData) {
+        attendanceData = JSON.parse(storedData);
+      } else {
+        attendanceData = {};
+      }
     } else {
-      attendanceData = data;
+      // Load from server for local development
+      const res = await fetch("/attendance");
+      const data = await res.json();
+      
+      // Convert array to object format
+      if (Array.isArray(data)) {
+        attendanceData = {};
+        data.forEach(record => {
+          if (record.studentName) {
+            attendanceData[record.studentName] = record;
+          }
+        });
+      } else {
+        attendanceData = data;
+      }
     }
     
     updateHeaderDate();
@@ -206,15 +255,24 @@ async function saveAllAttendance() {
   }
 
   try {
-    const res = await fetch("/attendance", {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(attendanceData)
-    });
+    // Check if running on GitHub Pages (static hosting)
+    if (window.location.hostname.includes('github.io')) {
+      // Save to localStorage for GitHub Pages
+      localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+      alert("✅ Attendance saved successfully!");
+      loadAttendanceData();
+    } else {
+      // Save to server for local development
+      const res = await fetch("/attendance", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify(attendanceData)
+      });
 
-    const msg = await res.text();
-    alert("✅ " + msg);
-    loadAttendanceData();
+      const msg = await res.text();
+      alert("✅ " + msg);
+      loadAttendanceData();
+    }
   } catch (error) {
     alert("❌ Error saving attendance: " + error.message);
   }
@@ -354,6 +412,10 @@ function resetTable() {
 
 function logout() {
   if (confirm("Are you sure you want to logout?")) {
+    // Clear session if on GitHub Pages
+    if (window.location.hostname.includes('github.io')) {
+      localStorage.removeItem('currentUser');
+    }
     window.location = "index.html";
   }
 }

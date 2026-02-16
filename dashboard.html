@@ -90,6 +90,15 @@
 <script src="script.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Check authentication
+    if (window.location.hostname.includes('github.io')) {
+        const currentUser = localStorage.getItem('currentUser');
+        if (!currentUser) {
+            window.location = 'index.html';
+            return;
+        }
+    }
+    
     loadAttendanceData();
 });
 </script>
