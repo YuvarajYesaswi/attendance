@@ -2,8 +2,11 @@
 // ============ AUTH FUNCTIONS ============
 async function handleLogin(event) {
   event.preventDefault();
+  console.log("Login function called");
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
+  
+  console.log("Email:", email, "Password:", password ? "provided" : "missing");
 
   if (!email || !password) {
     alert("❌ Please fill in all fields");
@@ -11,21 +14,26 @@ async function handleLogin(event) {
   }
 
   try {
+    console.log("Sending login request...");
     const res = await fetch("/login", {
       method: "POST",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({ email, password })
     });
 
+    console.log("Response status:", res.status);
     const msg = await res.text();
+    console.log("Response message:", msg);
     
     if (msg === "Login success") {
       alert("✅ Login successful!");
-      window.location = "dashboard.html";
+      console.log("Redirecting to dashboard...");
+      window.location.href = "dashboard.html";
     } else {
       alert("❌ " + msg);
     }
   } catch (error) {
+    console.error("Login error:", error);
     alert("❌ Login failed: " + error.message);
   }
 }

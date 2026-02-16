@@ -13,7 +13,7 @@ const db = admin.firestore();
 
 const app = express();
 app.use(bodyParser.json());
-app.use(express.static("public"));
+app.use(express.static("."));
 
 /* ---------- SIGN UP ---------- */
 app.post("/signup", async (req, res) => {
